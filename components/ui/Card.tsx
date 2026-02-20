@@ -12,7 +12,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           glass && 'glass-card',
-          'p-5',
+          'p-4 md:p-5',
           className
         )}
         {...props}

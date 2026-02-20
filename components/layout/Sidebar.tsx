@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   ListTodo, 
@@ -12,8 +13,6 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -32,20 +31,18 @@ export function Sidebar() {
     setIsMounted(true);
   }, []);
 
-  // Close sidebar on route change (mobile)
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
-  // Prevent body scroll when sidebar is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
   }, [isOpen]);
 
@@ -55,42 +52,49 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile toggle button */}
-      <button 
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-slate-200"
+      {/* Mobile Toggle Button - Fixed position */}
+      <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle menu"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white rounded-lg shadow-md border border-slate-200 hover:bg-slate-50 transition-colors"
+        aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
+        aria-expanded={isOpen}
       >
-        {isOpen ? <X className="w-6 h-6 text-slate-700" /> : <Menu className="w-6 h-6 text-slate-700" />}
+        {isOpen ? (
+          <X className="w-5 h-5 text-slate-700" />
+        ) : (
+          <Menu className="w-5 h-5 text-slate-700" />
+        )}
       </button>
 
       {/* Overlay */}
       {isOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 bg-black/60 z-40"
           onClick={() => setIsOpen(false)}
-          style={{ backdropFilter: 'blur(4px)' }}
         />
       )}
 
-      {/* Sidebar */}
-      <aside className={cn(
-        "w-64 glass-sidebar min-h-screen fixed left-0 top-0 flex flex-col z-45 transition-transform duration-300 ease-in-out",
-        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
-        <div className="p-6 border-b border-slate-200/60">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-violet-500 rounded-xl flex items-center justify-center">
-              <Rocket className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-bold text-slate-800">Mission Control</h1>
-              <p className="text-xs text-slate-500">Dashboard</p>
-            </div>
+      {/* Sidebar - Always visible on lg, slide on mobile */}
+      <aside className={`
+        fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 z-45
+        transform transition-transform duration-200 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0
+      `}>
+        {/* Header */}
+        <div className="h-16 flex items-center gap-3 px-4 border-b border-slate-200">
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-violet-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Rocket className="w-4 h-4 text-white" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="font-bold text-slate-800 text-sm truncate">Mission Control</h1>
+            <p className="text-xs text-slate-500 truncate">Dashboard</p>
           </div>
         </div>
         
-        <nav className="flex-1 p-4 overflow-y-auto">
+        {/* Navigation */}
+        <nav className="p-3">
           <ul className="space-y-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -98,15 +102,16 @@ export function Sidebar() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={cn(
-                      'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
-                      isActive
-                        ? 'bg-blue-500 text-white shadow-md'
+                    className={`
+                      flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                      ${isActive 
+                        ? 'bg-blue-500 text-white' 
                         : 'text-slate-600 hover:bg-slate-100'
-                    )}
+                      }
+                    `}
                   >
-                    <item.icon className="w-5 h-5" />
-                    {item.label}
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">{item.label}</span>
                   </Link>
                 </li>
               );
@@ -114,12 +119,13 @@ export function Sidebar() {
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-slate-200/60">
-          <div className="glass rounded-xl p-4">
-            <p className="text-xs text-slate-500 mb-2">System Status</p>
+        {/* Footer */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-slate-200">
+          <div className="bg-slate-50 rounded-lg p-3">
+            <p className="text-xs text-slate-500 mb-1.5">System Status</p>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-slate-700">All Systems Operational</span>
+              <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+              <span className="text-xs font-medium text-slate-700">Online</span>
             </div>
           </div>
         </div>

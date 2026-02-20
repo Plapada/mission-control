@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Mission Control',
   description: 'Dashboard em tempo real do ecossistema de agentes',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 };
 
 export default function RootLayout({
@@ -18,14 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="pt-BR">
+      <body className={`${inter.className} bg-slate-50 text-slate-900`}>
         <Providers>
-          <div className="flex min-h-screen">
+          <div className="min-h-screen">
             <Sidebar />
-            <div className="flex-1 lg:ml-64">
+            <div className="lg:pl-64">
               <Header />
-              <main className="p-4 lg:p-6">
+              <main className="p-4 md:p-6">
                 {children}
               </main>
             </div>
