@@ -1,18 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { NextResponse } from 'next/server';
+import { getSupabaseClient } from '@/lib/supabase-server';
 
 export async function GET() {
   try {
-    // Get all token usage
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('token_usage')
       .select('*, agent:agents(*)')
@@ -20,17 +11,14 @@ export async function GET() {
 
     if (error) throw error;
 
-    // Group by model
     const byModel: Record<string, { tokens: number; cost: number }> = {};
     const monthlyData: Record<string, number> = {};
 
-    data?.forEach(t => {
-      // By model
+    data?.forEach((t: any) => {
       if (!byModel[t.model]) byModel[t.model] = { tokens: 0, cost: 0 };
       byModel[t.model].tokens += t.total_tokens;
       byModel[t.model].cost += t.cost;
 
-      // By month
       const month = new Date(t.timestamp).toLocaleDateString('en-US', { month: 'short' });
       if (!monthlyData[month]) monthlyData[month] = 0;
       monthlyData[month] += t.total_tokens;
@@ -50,10 +38,7 @@ export async function GET() {
       tokens,
     }));
 
-    return NextResponse.json({
-      byModel: byModelResult,
-      monthly: monthlyResult,
-    });
+    return NextResponse.json({ byModel: byModelResult, monthly: monthlyResult });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
