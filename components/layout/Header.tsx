@@ -5,7 +5,7 @@ import { Avatar } from '@/components/ui/Avatar';
 
 export function Header() {
   return (
-    <header className="h-14 md:h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 sticky top-0 z-10">
+    <header className="h-14 md:h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 sticky top-0 z-20">
       <div className="flex-1">
         {/* Search - hidden on small mobile */}
         <div className="hidden md:block relative max-w-md">

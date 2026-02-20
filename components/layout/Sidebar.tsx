@@ -58,7 +58,6 @@ export function Sidebar() {
         onClick={() => setIsOpen(!isOpen)}
         className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white rounded-lg shadow-md border border-slate-200 hover:bg-slate-50 transition-colors"
         aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
-        aria-expanded={isOpen}
       >
         {isOpen ? (
           <X className="w-5 h-5 text-slate-700" />
@@ -67,20 +66,12 @@ export function Sidebar() {
         )}
       </button>
 
-      {/* Overlay */}
-      {isOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black/60 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Always visible on lg, slide on mobile */}
+      {/* Sidebar - Full solid background on mobile, no overlay */}
       <aside className={`
-        fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 z-45
+        fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 z-50
         transform transition-transform duration-200 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0
+        lg:translate-x-0 lg:z-30
       `}>
         {/* Header */}
         <div className="h-16 flex items-center gap-3 px-4 border-b border-slate-200">

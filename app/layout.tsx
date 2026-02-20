@@ -22,14 +22,13 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${inter.className} bg-slate-50 text-slate-900`}>
         <Providers>
-          <div className="min-h-screen">
-            <Sidebar />
-            <div className="lg:pl-64">
-              <Header />
-              <main className="p-4 md:p-6">
-                {children}
-              </main>
-            </div>
+          <Sidebar />
+          {/* Main content wrapper - no sidebar on mobile, sidebar visible on lg */}
+          <div className="lg:pl-64">
+            <Header />
+            <main className="p-4 md:p-6">
+              {children}
+            </main>
           </div>
         </Providers>
       </body>
