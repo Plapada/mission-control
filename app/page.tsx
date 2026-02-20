@@ -37,7 +37,13 @@ export default function Dashboard() {
           .select('*')
           .order('name');
         
-        if (agentsData) setAgents(agentsData);
+        if (agentsData) {
+          // Remove duplicates
+          const uniqueAgents = agentsData.filter((agent, index, self) => 
+            index === self.findIndex((a) => a.name === agent.name)
+          );
+          setAgents(uniqueAgents);
+        }
 
         // Fetch tasks
         const { data: tasksData } = await supabase
@@ -88,7 +94,7 @@ export default function Dashboard() {
               model,
               totalTokens: v.tokens,
               totalCost: v.cost,
-              percentage: (v.tokens / totalTokens) * 100,
+              percentage: totalTokens > 0 ? (v.tokens / totalTokens) * 100 : 0,
             }))
           );
         }
@@ -159,11 +165,13 @@ export default function Dashboard() {
       {/* Token Stats */}
       <section>
         <h2 className="text-lg font-semibold text-slate-700 mb-4">💰 Token Spending</h2>
-        <TokenStats stats={tokenStats} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <TokenStats stats={tokenStats} />
+        </div>
       </section>
 
-      {/* Token Charts */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Token Charts - Hidden on mobile */}
+      <section className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TokenChart data={tokenByModel} />
         <UsageChart data={monthlyUsage} />
       </section>
@@ -171,7 +179,9 @@ export default function Dashboard() {
       {/* Kanban Board */}
       <section>
         <h2 className="text-lg font-semibold text-slate-700 mb-4">📋 Tasks</h2>
-        <KanbanBoard initialTasks={tasks} onTaskMove={handleTaskMove} />
+        <div className="overflow-x-auto -mx-4 px-4">
+          <KanbanBoard initialTasks={tasks} onTaskMove={handleTaskMove} />
+        </div>
       </section>
 
       {/* Agents & Activity */}
@@ -186,8 +196,8 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Transactions */}
-      <section>
+      {/* Transactions - Hidden on mobile */}
+      <section className="hidden lg:block">
         <h2 className="text-lg font-semibold text-slate-700 mb-4">💳 Recent Transactions</h2>
         <TransactionsTable transactions={transactions} />
       </section>

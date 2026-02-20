@@ -19,8 +19,8 @@
 ### FASE 2: Configuração do Projeto
 
 - [x] **2.1** Criar arquivo `.env.local` com as chaves do Supabase
-- [ ] **2.2** Testar conexão com o banco via API
-- [ ] **2.3** Verificar se as API routes estão funcionando
+- [x] **2.2** Testar conexão com o banco via API
+- [x] **2.3** Verificar se as API routes estão funcionando
 
 ### FASE 3: Visuais com Stitch
 
