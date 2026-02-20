@@ -13,7 +13,7 @@ import {
   X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -26,15 +26,42 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when sidebar is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
       {/* Mobile toggle button */}
       <button 
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-slate-200"
         onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle menu"
       >
-        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        {isOpen ? <X className="w-6 h-6 text-slate-700" /> : <Menu className="w-6 h-6 text-slate-700" />}
       </button>
 
       {/* Overlay */}
@@ -42,11 +69,13 @@ export function Sidebar() {
         <div 
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setIsOpen(false)}
+          style={{ backdropFilter: 'blur(4px)' }}
         />
       )}
 
+      {/* Sidebar */}
       <aside className={cn(
-        "w-64 glass-sidebar min-h-screen fixed left-0 top-0 flex flex-col z-45 transition-transform duration-300",
+        "w-64 glass-sidebar min-h-screen fixed left-0 top-0 flex flex-col z-45 transition-transform duration-300 ease-in-out",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="p-6 border-b border-slate-200/60">
@@ -61,7 +90,7 @@ export function Sidebar() {
           </div>
         </div>
         
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -69,7 +98,6 @@ export function Sidebar() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    onClick={() => setIsOpen(false)}
                     className={cn(
                       'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
                       isActive
